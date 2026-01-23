@@ -14,6 +14,7 @@ export interface AuthStatus {
   authenticated: boolean;
   expires_at: number | null;
   credentials_path: string;
+  error_reason: string | null;
 }
 
 export interface ApiError {

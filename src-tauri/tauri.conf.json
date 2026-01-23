@@ -15,16 +15,17 @@
       {
         "label": "main",
         "title": "Claude Usage Monitor",
-        "width": 140,
-        "height": 75,
-        "resizable": false,
-        "decorations": false,
-        "transparent": true,
+        "width": 380,
+        "height": 360,
+        "minWidth": 140,
+        "minHeight": 75,
+        "resizable": true,
+        "decorations": true,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "x": 20,
-        "y": 20,
-        "shadow": false
+        "shadow": true
       }
     ],
     "security": {

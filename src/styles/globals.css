@@ -15,12 +15,15 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: transparent;
+  background: black;
+  height: 100%;
   overflow: hidden;
 }
 
 #root {
-  background: transparent;
+  background: black;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Custom scrollbar */

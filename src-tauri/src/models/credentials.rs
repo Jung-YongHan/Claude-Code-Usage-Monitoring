@@ -25,4 +25,5 @@ pub struct AuthStatus {
     pub authenticated: bool,
     pub expires_at: Option<i64>,
     pub credentials_path: String,
+    pub error_reason: Option<String>,
 }
