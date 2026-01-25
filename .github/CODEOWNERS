@@ -1,0 +1,14 @@
+# Default owner for everything
+* @Jung-YongHan
+
+# Frontend (React/TypeScript)
+/src/ @Jung-YongHan
+
+# Rust backend
+/src-tauri/ @Jung-YongHan
+
+# CI/CD configuration
+/.github/ @Jung-YongHan
+
+# Documentation
+*.md @Jung-YongHan
