@@ -69,16 +69,6 @@ pub fn get_platform_name() -> &'static str {
 }
 
 pub fn check_transparency_support() -> bool {
-    #[cfg(target_os = "linux")]
-    {
-        std::env::var("WAYLAND_DISPLAY").is_ok()
-            || std::env::var("XDG_SESSION_TYPE")
-                .map(|v| v == "wayland")
-                .unwrap_or(false)
-            || true
-    }
-    #[cfg(not(target_os = "linux"))]
-    {
-        true
-    }
+    // Most modern compositors support transparency
+    true
 }
