@@ -29,9 +29,8 @@ pub fn run() {
             if let Some(shortcut) = platform::parse_shortcut(&settings.shortcut) {
                 let app_handle = app.handle().clone();
 
-                app.global_shortcut().on_shortcut(
-                    shortcut,
-                    move |_app, _shortcut, event| {
+                app.global_shortcut()
+                    .on_shortcut(shortcut, move |_app, _shortcut, event| {
                         if event.state() != ShortcutState::Pressed {
                             return;
                         }
@@ -44,8 +43,7 @@ pub fn run() {
                                 let _ = window.emit("overlay-visibility", true);
                             }
                         }
-                    },
-                )?;
+                    })?;
             }
 
             // Platform-specific window positioning (skip on first launch - will be centered by frontend)

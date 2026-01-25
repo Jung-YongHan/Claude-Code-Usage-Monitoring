@@ -15,7 +15,11 @@ pub async fn check_credentials() -> Result<AuthStatus, String> {
                 authenticated: is_valid,
                 expires_at: Some(creds.expires_at),
                 credentials_path: path_str,
-                error_reason: if is_valid { None } else { Some("token_expired".to_string()) },
+                error_reason: if is_valid {
+                    None
+                } else {
+                    Some("token_expired".to_string())
+                },
             })
         }
         Err(e) => {
