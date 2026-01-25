@@ -28,3 +28,6 @@ src-tauri/target/
 
 # Claude Code
 .claude/
+
+# Windows
+nul
