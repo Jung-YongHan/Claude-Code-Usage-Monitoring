@@ -46,7 +46,7 @@ function App() {
     if (platformInfo !== null) {
       adjustWindowSize();
     }
-  }, [platformInfo?.is_first_launch, centerWindow, authLoading, authStatus]);
+  }, [platformInfo, centerWindow, authLoading, authStatus]);
 
   const isLoading = authLoading || settingsLoading;
 
