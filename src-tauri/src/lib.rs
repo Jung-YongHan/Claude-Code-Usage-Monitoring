@@ -17,6 +17,13 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
+            // CLI 인자 처리: --reset 또는 -r 옵션으로 설정 초기화
+            let args: Vec<String> = std::env::args().collect();
+            if args.iter().any(|arg| arg == "--reset" || arg == "-r") {
+                settings_store::reset_settings();
+                println!("[DEV] Settings reset. Running in first-launch mode.");
+            }
+
             let settings = settings_store::load_settings();
 
             if let Some(shortcut) = platform::parse_shortcut(&settings.shortcut) {

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:reset": "npm run tauri dev -- -- -- --reset",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"

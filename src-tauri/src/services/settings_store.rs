@@ -83,3 +83,11 @@ pub fn save_settings(settings: &AppSettings) -> Result<(), std::io::Error> {
     let json = serde_json::to_string_pretty(settings)?;
     std::fs::write(path, json)
 }
+
+/// 설정 파일을 삭제하여 최초 실행 상태로 리셋
+pub fn reset_settings() {
+    let path = get_settings_path();
+    if path.exists() {
+        let _ = std::fs::remove_file(&path);
+    }
+}
