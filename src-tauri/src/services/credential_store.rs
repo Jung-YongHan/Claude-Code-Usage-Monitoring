@@ -16,9 +16,6 @@ pub enum CredentialError {
 
     #[error("No OAuth credentials found in file")]
     NoOAuthCredentials,
-
-    #[error("Token has expired")]
-    TokenExpired,
 }
 
 pub fn get_credentials_path() -> PathBuf {

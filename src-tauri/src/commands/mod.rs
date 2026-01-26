@@ -28,7 +28,6 @@ pub async fn check_credentials() -> Result<AuthStatus, String> {
                 crate::services::CredentialError::NoOAuthCredentials => "no_oauth",
                 crate::services::CredentialError::ReadError(_) => "read_error",
                 crate::services::CredentialError::ParseError(_) => "parse_error",
-                crate::services::CredentialError::TokenExpired => "token_expired",
             };
             Ok(AuthStatus {
                 authenticated: false,

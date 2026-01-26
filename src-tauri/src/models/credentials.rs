@@ -11,12 +11,14 @@ pub struct ClaudeOAuth {
     #[serde(rename = "accessToken")]
     pub access_token: String,
 
+    #[allow(dead_code)]
     #[serde(rename = "refreshToken")]
     pub refresh_token: Option<String>,
 
     #[serde(rename = "expiresAt")]
     pub expires_at: i64,
 
+    #[allow(dead_code)]
     pub scopes: Option<Vec<String>>,
 }
 

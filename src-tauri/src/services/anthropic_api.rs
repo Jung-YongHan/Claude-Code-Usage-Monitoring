@@ -9,13 +9,10 @@ const ANTHROPIC_BETA: &str = "oauth-2025-04-20";
 #[derive(Error, Debug)]
 pub enum ApiError {
     #[error("Network error: {0}")]
-    NetworkError(#[from] reqwest::Error),
+    Network(#[from] reqwest::Error),
 
     #[error("API returned error: {status} - {message}")]
-    ApiError { status: u16, message: String },
-
-    #[error("Failed to parse response: {0}")]
-    ParseError(String),
+    Response { status: u16, message: String },
 }
 
 pub async fn fetch_usage(access_token: &str) -> Result<UsageResponse, ApiError> {
@@ -33,7 +30,7 @@ pub async fn fetch_usage(access_token: &str) -> Result<UsageResponse, ApiError> 
 
     if !status.is_success() {
         let message = response.text().await.unwrap_or_default();
-        return Err(ApiError::ApiError {
+        return Err(ApiError::Response {
             status: status.as_u16(),
             message,
         });
