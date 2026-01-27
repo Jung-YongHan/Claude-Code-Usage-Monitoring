@@ -85,6 +85,7 @@ pub fn save_settings(settings: &AppSettings) -> Result<(), std::io::Error> {
 }
 
 /// 설정 파일을 삭제하여 최초 실행 상태로 리셋
+#[allow(dead_code)]
 pub fn reset_settings() {
     let path = get_settings_path();
     if path.exists() {

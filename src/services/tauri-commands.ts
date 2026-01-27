@@ -12,3 +12,7 @@ export async function fetchUsageData(): Promise<UsageData> {
 export async function getCredentialsPath(): Promise<string> {
   return invoke("get_credentials_path_cmd");
 }
+
+export async function launchClaudeCli(): Promise<void> {
+  return invoke("launch_claude_cli");
+}

@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use crate::models::{AuthStatus, UsageResponse};
 use crate::platform;
 use crate::services::settings_store::{self, AppSettings, ShortcutConfig};
@@ -112,6 +114,30 @@ pub fn center_settings_window(window: tauri::Window) -> Result<(), String> {
             .map_err(|e| e.to_string())?;
     }
     Ok(())
+}
+
+#[tauri::command]
+pub fn launch_claude_cli() -> Result<(), String> {
+    // Try to find claude in common locations
+    let claude_paths = if cfg!(target_os = "windows") {
+        vec!["claude.exe", "claude"]
+    } else {
+        vec![
+            "claude",
+            "/usr/local/bin/claude",
+            "/opt/homebrew/bin/claude",
+        ]
+    };
+
+    for path in claude_paths {
+        let result = Command::new(path).spawn();
+
+        if result.is_ok() {
+            return Ok(());
+        }
+    }
+
+    Err("Claude CLI not found. Please install Claude Code first.".to_string())
 }
 
 fn format_shortcut_display(config: &ShortcutConfig) -> String {
