@@ -4,7 +4,7 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { useAuth } from "./hooks/useAuth";
 import { useSettings } from "./hooks/useSettings";
 import { Overlay } from "./components/Overlay/Overlay";
-import { ShortcutSettings } from "./components/ShortcutSettings/ShortcutSettings";
+import { OnboardingWizard } from "./components/OnboardingWizard";
 import { LoginRequired } from "./components/LoginRequired";
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
       const window = getCurrentWindow();
       console.log("adjustWindowSize called, is_first_launch:", platformInfo?.is_first_launch);
       if (platformInfo?.is_first_launch) {
-        // Size is managed by ShortcutSettings component
+        // Size is managed by OnboardingWizard component
         await centerWindow();
       } else if (!authLoading && authStatus && !authStatus.authenticated) {
         await window.setSize(new LogicalSize(200, 140));
@@ -56,16 +56,17 @@ function App() {
       ? "bg-slate-900 border border-slate-700"
       : "bg-black/90";
 
-  // First launch - show shortcut settings
+  // First launch - show onboarding wizard
   if (platformInfo?.is_first_launch) {
     return (
       <div className="bg-slate-900 h-full pt-8">
-        <ShortcutSettings
+        <OnboardingWizard
           platformName={platformInfo.name}
-          onNext={async (modifier, key) => {
+          onComplete={async (modifier, key) => {
             await saveShortcut(modifier, key);
             await completeFirstLaunch();
           }}
+          centerWindow={centerWindow}
         />
       </div>
     );

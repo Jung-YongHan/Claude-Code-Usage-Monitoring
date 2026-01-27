@@ -5,7 +5,8 @@ mod services;
 
 use commands::{
     center_settings_window, check_credentials, complete_first_launch, fetch_usage_data,
-    get_credentials_path_cmd, get_platform_info, get_settings, save_shortcut_setting,
+    get_credentials_path_cmd, get_platform_info, get_settings, launch_claude_cli,
+    save_shortcut_setting,
 };
 use services::settings_store;
 use tauri::{Emitter, Manager};
@@ -17,13 +18,6 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
-            // CLI 인자 처리: --reset 또는 -r 옵션으로 설정 초기화
-            let args: Vec<String> = std::env::args().collect();
-            if args.iter().any(|arg| arg == "--reset" || arg == "-r") {
-                settings_store::reset_settings();
-                println!("[DEV] Settings reset. Running in first-launch mode.");
-            }
-
             let settings = settings_store::load_settings();
 
             if let Some(shortcut) = platform::parse_shortcut(&settings.shortcut) {
@@ -86,7 +80,8 @@ pub fn run() {
             save_shortcut_setting,
             complete_first_launch,
             get_platform_info,
-            center_settings_window
+            center_settings_window,
+            launch_claude_cli
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
