@@ -10,13 +10,19 @@ Claude Code is Anthropic's official CLI tool for interacting with Claude. When u
 
 - **Real-time Usage Tracking**: Monitor your Claude Code API consumption at a glance
 - **Multiple Quota Views**: 5-hour, 7-day total, 7-day Opus, and 7-day Sonnet usage
-- **Auto-refresh**: Updates every minute automatically
+- **Auto-refresh**: Updates every 10 seconds automatically
 - **Color-coded Status**: Visual indicators from green (low usage) to red (near limit)
   - Green: 0-50%
   - Yellow: 50-75%
   - Orange: 75-90%
   - Red: 90-100%
-- **Minimal Overlay Mode**: Compact HUD that stays on top of other windows
+- **Dual Display Modes**:
+  - **Detailed Mode**: Full dashboard (380x360) with all usage metrics
+  - **Overlay Mode**: Compact HUD (140x75) that stays on top of other windows
+- **First-Launch Onboarding Wizard**: 3-step guided setup
+  1. Account Connection (Claude CLI authentication)
+  2. Layout Selection (choose between detailed/simple modes with live preview)
+  3. Keyboard Shortcut Configuration
 - **Global Keyboard Shortcut**: Toggle visibility instantly (customizable)
 - **Cross-platform**: Works on Windows, macOS, and Linux
 
@@ -24,7 +30,7 @@ Claude Code is Anthropic's official CLI tool for interacting with Claude. When u
 
 ### Download Pre-built Releases
 
-Download the latest release for your platform from the [Releases](https://github.com/your-username/Claude-Code-Usage-Monitoring-Desktop-Application/releases) page:
+Download the latest release for your platform from the [Releases](https://github.com/Jung-YongHan/Claude-Code-Usage-Monitoring-Desktop-Application/releases) page:
 
 - **Windows**: `.msi` or `.exe` installer
 - **macOS**: `.dmg` (universal binary for Apple Silicon and Intel)
@@ -41,9 +47,21 @@ Before using this app, you must have:
 
 ### First Launch
 
-1. Launch the application
-2. Configure your preferred global shortcut key (or use the default)
-3. If you see "Login Required", run `claude` in your terminal and complete the login process
+On first launch, you'll be guided through a 3-step onboarding wizard:
+
+1. **Account Connection**
+   - The app checks for Claude CLI credentials
+   - If not logged in, follow the instructions to run `claude` in your terminal
+   - The wizard auto-advances once authentication succeeds
+
+2. **Layout Selection**
+   - Choose between **Detailed** (full dashboard) or **Simple** (compact overlay) mode
+   - Live previews show how each mode looks before you choose
+
+3. **Shortcut Configuration**
+   - Set your preferred global keyboard shortcut
+   - Press the key combination you want to use
+   - Default: `Ctrl+Shift+U` (Windows/Linux) or `Cmd+Shift+U` (macOS)
 
 ### Dashboard View
 
@@ -117,7 +135,7 @@ Built artifacts are output to `src-tauri/target/release/`.
 │   │   ├── Dashboard/            # Main dashboard view
 │   │   ├── Overlay/              # Minimal HUD mode
 │   │   ├── LoginRequired/        # Login instructions
-│   │   └── ShortcutSettings/     # Shortcut configuration
+│   │   └── OnboardingWizard/     # First-launch setup wizard
 │   ├── hooks/                    # Custom React hooks
 │   ├── services/                 # Tauri IPC layer
 │   └── utils/                    # Helper functions
