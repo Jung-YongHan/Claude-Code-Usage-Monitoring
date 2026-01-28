@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { CheckCircle, AlertCircle, RefreshCw, User, ExternalLink } from "lucide-react";
 import { AuthStatus } from "../../services/types";
-import { launchClaudeCli } from "../../services/tauri-commands";
+import { launchClaudeCli, closeClaudeTerminal } from "../../services/tauri-commands";
 
 type ConnectionState = "idle" | "launching" | "polling";
 
@@ -32,8 +32,16 @@ export function AccountConnectionStep({
   useEffect(() => {
     if (isConnected && connectionState === "polling") {
       setConnectionState("idle");
+      // Close the terminal that was opened for login
+      closeClaudeTerminal().catch(() => {
+        // Ignore errors - terminal may already be closed
+      });
+      // Small delay to show success state before moving on
+      setTimeout(() => {
+        onContinue();
+      }, 500);
     }
-  }, [isConnected, connectionState]);
+  }, [isConnected, connectionState, onContinue]);
 
   // Polling effect
   useEffect(() => {
@@ -127,7 +135,7 @@ export function AccountConnectionStep({
               <span className="text-sm font-medium">연결 대기 중...</span>
             </div>
             <p className="text-xs text-slate-400 ml-7">
-              브라우저에서 로그인을 완료하면 자동으로 연결됩니다
+              터미널에서 Claude 로그인을 완료하면 자동으로 연결됩니다
             </p>
           </>
         ) : (
@@ -151,7 +159,7 @@ export function AccountConnectionStep({
       )}
 
       {/* Action Buttons */}
-      <div className="mt-auto space-y-2">
+      <div className="space-y-2">
         {isConnected ? (
           <button
             onClick={onContinue}
