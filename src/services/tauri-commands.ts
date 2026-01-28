@@ -16,3 +16,11 @@ export async function getCredentialsPath(): Promise<string> {
 export async function launchClaudeCli(): Promise<void> {
   return invoke("launch_claude_cli");
 }
+
+export async function closeClaudeTerminal(): Promise<void> {
+  return invoke("close_claude_terminal");
+}
+
+export async function setWindowSize(width: number, height: number): Promise<void> {
+  return invoke("set_window_size", { width, height });
+}

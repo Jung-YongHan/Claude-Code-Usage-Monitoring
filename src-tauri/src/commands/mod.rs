@@ -30,6 +30,7 @@ pub async fn check_credentials() -> Result<AuthStatus, String> {
                 crate::services::CredentialError::NoOAuthCredentials => "no_oauth",
                 crate::services::CredentialError::ReadError(_) => "read_error",
                 crate::services::CredentialError::ParseError(_) => "parse_error",
+                crate::services::CredentialError::KeychainError(_) => "keychain_error",
             };
             Ok(AuthStatus {
                 authenticated: false,
@@ -117,27 +118,111 @@ pub fn center_settings_window(window: tauri::Window) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn set_window_size(window: tauri::Window, width: u32, height: u32) -> Result<(), String> {
+    window
+        .set_size(tauri::LogicalSize::new(width, height))
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub fn launch_claude_cli() -> Result<(), String> {
-    // Try to find claude in common locations
-    let claude_paths = if cfg!(target_os = "windows") {
-        vec!["claude.exe", "claude"]
-    } else {
-        vec![
-            "claude",
-            "/usr/local/bin/claude",
-            "/opt/homebrew/bin/claude",
-        ]
-    };
+    #[cfg(target_os = "macos")]
+    {
+        // On macOS, open Terminal with a specific title for later identification
+        let script = r#"tell application "Terminal"
+            activate
+            set newTab to do script "claude"
+            set custom title of newTab to "Claude Login"
+        end tell"#;
 
-    for path in claude_paths {
-        let result = Command::new(path).spawn();
+        Command::new("osascript")
+            .arg("-e")
+            .arg(script)
+            .spawn()
+            .map_err(|e| format!("Failed to open Terminal: {}", e))?;
 
-        if result.is_ok() {
-            return Ok(());
-        }
+        return Ok(());
     }
 
-    Err("Claude CLI not found. Please install Claude Code first.".to_string())
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, open cmd with a specific title
+        Command::new("cmd")
+            .args(["/c", "start", "Claude Login", "cmd", "/k", "claude"])
+            .spawn()
+            .map_err(|e| format!("Failed to open Command Prompt: {}", e))?;
+
+        return Ok(());
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        // On Linux, try common terminal emulators with title
+        let terminals = [
+            ("gnome-terminal", vec!["--title=Claude Login", "--", "claude"]),
+            ("konsole", vec!["--title", "Claude Login", "-e", "claude"]),
+            ("xfce4-terminal", vec!["--title=Claude Login", "-e", "claude"]),
+            ("xterm", vec!["-title", "Claude Login", "-e", "claude"]),
+        ];
+
+        for (term, args) in terminals {
+            if Command::new(term).args(&args).spawn().is_ok() {
+                return Ok(());
+            }
+        }
+
+        return Err("No supported terminal emulator found".to_string());
+    }
+
+    #[allow(unreachable_code)]
+    Err("Unsupported platform".to_string())
+}
+
+#[tauri::command]
+pub fn close_claude_terminal() -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        // Close Terminal windows with "Claude Login" in the title
+        let script = r#"tell application "Terminal"
+            set windowsToClose to every window whose name contains "Claude Login"
+            repeat with w in windowsToClose
+                close w
+            end repeat
+        end tell"#;
+
+        Command::new("osascript")
+            .arg("-e")
+            .arg(script)
+            .output()
+            .map_err(|e| format!("Failed to close Terminal: {}", e))?;
+
+        return Ok(());
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, close the window by title
+        Command::new("taskkill")
+            .args(["/FI", "WINDOWTITLE eq Claude Login", "/T", "/F"])
+            .output()
+            .ok();
+
+        return Ok(());
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        // On Linux, use wmctrl if available
+        Command::new("wmctrl")
+            .args(["-c", "Claude Login"])
+            .output()
+            .ok();
+
+        return Ok(());
+    }
+
+    #[allow(unreachable_code)]
+    Ok(())
 }
 
 fn format_shortcut_display(config: &ShortcutConfig) -> String {

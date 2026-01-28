@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { useAuth } from "../../hooks/useAuth";
+import { setWindowSize } from "../../services/tauri-commands";
 import { StepIndicator } from "./StepIndicator";
 import { AccountConnectionStep } from "./AccountConnectionStep";
 import { ShortcutStep } from "./ShortcutStep";
@@ -19,18 +19,21 @@ export function OnboardingWizard({
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const { data: authStatus, isLoading: authLoading, refetch } = useAuth();
 
+  const isConnected = authStatus?.authenticated ?? false;
+
   // Adjust window size when entering step 1
   useEffect(() => {
     const adjustSize = async () => {
       if (currentStep === 1) {
-        const win = getCurrentWindow();
-        await win.setSize(new LogicalSize(380, 380));
+        // Use smaller height when already connected
+        const height = isConnected ? 300 : 380;
+        await setWindowSize(380, height);
         await centerWindow();
       }
       // Step 2 sizing is handled by ShortcutSettings component
     };
     adjustSize();
-  }, [currentStep, centerWindow]);
+  }, [currentStep, centerWindow, isConnected]);
 
   const handleRetry = () => {
     refetch();

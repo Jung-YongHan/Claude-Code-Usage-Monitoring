@@ -4,9 +4,9 @@ mod platform;
 mod services;
 
 use commands::{
-    center_settings_window, check_credentials, complete_first_launch, fetch_usage_data,
-    get_credentials_path_cmd, get_platform_info, get_settings, launch_claude_cli,
-    save_shortcut_setting,
+    center_settings_window, check_credentials, close_claude_terminal, complete_first_launch,
+    fetch_usage_data, get_credentials_path_cmd, get_platform_info, get_settings, launch_claude_cli,
+    save_shortcut_setting, set_window_size,
 };
 use services::settings_store;
 use tauri::{Emitter, Manager};
@@ -81,7 +81,9 @@ pub fn run() {
             complete_first_launch,
             get_platform_info,
             center_settings_window,
-            launch_claude_cli
+            set_window_size,
+            launch_claude_cli,
+            close_claude_terminal
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
