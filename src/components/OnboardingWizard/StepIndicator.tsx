@@ -1,13 +1,13 @@
 interface StepIndicatorProps {
-  currentStep: 1 | 2;
-  totalSteps: 2;
+  currentStep: number;
+  totalSteps: number;
 }
 
 export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
   return (
     <div className="flex items-center justify-center gap-2 mb-4">
       {Array.from({ length: totalSteps }, (_, i) => {
-        const step = (i + 1) as 1 | 2;
+        const step = i + 1;
         const isActive = step === currentStep;
         const isCompleted = step < currentStep;
 

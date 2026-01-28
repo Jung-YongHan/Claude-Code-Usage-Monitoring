@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-
-interface ShortcutConfig {
-  modifier: string;
-  key: string;
-}
-
-interface AppSettings {
-  shortcut: ShortcutConfig;
-  first_launch: boolean;
-}
+import type { AppSettings, LayoutType } from "../services/types";
 
 interface PlatformInfo {
   name: string;
@@ -40,10 +31,15 @@ export function useSettings() {
   }, []);
 
   const saveShortcut = async (modifier: string, key: string) => {
-    await invoke("save_shortcut_setting", { modifier, key });
-    setSettings((prev) =>
-      prev ? { ...prev, shortcut: { modifier, key } } : null
-    );
+    try {
+      await invoke("save_shortcut_setting", { modifier, key });
+      setSettings((prev) =>
+        prev ? { ...prev, shortcut: { modifier, key } } : null
+      );
+    } catch (err) {
+      console.error("Failed to save shortcut:", err);
+      throw err;
+    }
   };
 
   const completeFirstLaunch = async () => {
@@ -51,6 +47,18 @@ export function useSettings() {
     setPlatformInfo((prev) =>
       prev ? { ...prev, is_first_launch: false } : null
     );
+  };
+
+  const saveLayout = async (layoutType: LayoutType) => {
+    try {
+      await invoke("save_layout_setting", { layoutType });
+      setSettings((prev) =>
+        prev ? { ...prev, layout: { layout_type: layoutType } } : null
+      );
+    } catch (err) {
+      console.error("Failed to save layout:", err);
+      throw err;
+    }
   };
 
   const centerWindow = async () => {
@@ -62,6 +70,7 @@ export function useSettings() {
     platformInfo,
     isLoading,
     saveShortcut,
+    saveLayout,
     completeFirstLaunch,
     centerWindow,
   };

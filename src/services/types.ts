@@ -21,3 +21,20 @@ export interface ApiError {
   code: string;
   message: string;
 }
+
+export type LayoutType = "simple" | "detailed";
+
+export interface LayoutConfig {
+  layout_type: LayoutType;
+}
+
+export interface ShortcutConfig {
+  modifier: string;
+  key: string;
+}
+
+export interface AppSettings {
+  shortcut: ShortcutConfig;
+  first_launch: boolean;
+  layout: LayoutConfig;
+}

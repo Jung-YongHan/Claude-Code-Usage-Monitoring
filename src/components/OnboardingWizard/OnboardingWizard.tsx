@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { setWindowSize } from "../../services/tauri-commands";
+import type { LayoutType } from "../../services/types";
 import { StepIndicator } from "./StepIndicator";
 import { AccountConnectionStep } from "./AccountConnectionStep";
+import { LayoutSettingsStep } from "./LayoutSettingsStep";
 import { ShortcutStep } from "./ShortcutStep";
 
 interface OnboardingWizardProps {
   platformName: string;
-  onComplete: (modifier: string, key: string) => Promise<void>;
+  onComplete: (modifier: string, key: string, layoutType: LayoutType) => Promise<void>;
   centerWindow: () => Promise<void>;
 }
 
@@ -16,7 +18,8 @@ export function OnboardingWizard({
   onComplete,
   centerWindow,
 }: OnboardingWizardProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  const [selectedLayout, setSelectedLayout] = useState<LayoutType>("simple");
   const { data: authStatus, isLoading: authLoading, refetch } = useAuth();
 
   const isConnected = authStatus?.authenticated ?? false;
@@ -30,7 +33,7 @@ export function OnboardingWizard({
         await setWindowSize(380, height);
         await centerWindow();
       }
-      // Step 2 sizing is handled by ShortcutSettings component
+      // Step 2 (LayoutSettingsStep) and Step 3 (ShortcutSettings) handle their own sizing
     };
     adjustSize();
   }, [currentStep, centerWindow, isConnected]);
@@ -47,18 +50,18 @@ export function OnboardingWizard({
     setCurrentStep(2);
   };
 
-  const handleShortcutComplete = async (modifier: string, key: string) => {
-    await onComplete(modifier, key);
+  const handleLayoutNext = () => {
+    setCurrentStep(3);
   };
 
-  return (
-    <div className="h-full flex flex-col">
-      <div className="pt-3">
-        <StepIndicator currentStep={currentStep} totalSteps={2} />
-      </div>
+  const handleShortcutComplete = async (modifier: string, key: string) => {
+    await onComplete(modifier, key, selectedLayout);
+  };
 
-      <div className="flex-1">
-        {currentStep === 1 ? (
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
           <AccountConnectionStep
             authStatus={authStatus}
             isLoading={authLoading}
@@ -66,12 +69,33 @@ export function OnboardingWizard({
             onSkip={handleSkip}
             onContinue={handleContinue}
           />
-        ) : (
+        );
+      case 2:
+        return (
+          <LayoutSettingsStep
+            selectedLayout={selectedLayout}
+            onLayoutChange={setSelectedLayout}
+            onNext={handleLayoutNext}
+          />
+        );
+      case 3:
+        return (
           <ShortcutStep
             platformName={platformName}
             onComplete={handleShortcutComplete}
           />
-        )}
+        );
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="pt-3">
+        <StepIndicator currentStep={currentStep} totalSteps={3} />
+      </div>
+
+      <div className="flex-1">
+        {renderStep()}
       </div>
     </div>
   );

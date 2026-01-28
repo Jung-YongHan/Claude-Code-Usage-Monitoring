@@ -1,10 +1,38 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum LayoutType {
+    Simple,
+    Detailed,
+}
+
+impl Default for LayoutType {
+    fn default() -> Self {
+        Self::Simple
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LayoutConfig {
+    pub layout_type: LayoutType,
+}
+
+impl Default for LayoutConfig {
+    fn default() -> Self {
+        Self {
+            layout_type: LayoutType::default(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     pub shortcut: ShortcutConfig,
     pub first_launch: bool,
+    #[serde(default)]
+    pub layout: LayoutConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,6 +46,7 @@ impl Default for AppSettings {
         Self {
             shortcut: ShortcutConfig::default(),
             first_launch: true,
+            layout: LayoutConfig::default(),
         }
     }
 }
