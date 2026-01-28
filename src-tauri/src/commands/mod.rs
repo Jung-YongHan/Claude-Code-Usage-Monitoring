@@ -182,9 +182,9 @@ pub fn launch_claude_cli() -> Result<(), String> {
 pub fn close_claude_terminal() -> Result<(), String> {
     #[cfg(target_os = "macos")]
     {
-        // Close Terminal windows with "Claude Login" or "claude" in the title
+        // Close Terminal windows with "Claude Login" in the title
         let script = r#"tell application "Terminal"
-            set windowsToClose to every window whose name contains "claude" or name contains "Claude Login"
+            set windowsToClose to every window whose name contains "Claude Login"
             repeat with w in windowsToClose
                 close w
             end repeat
