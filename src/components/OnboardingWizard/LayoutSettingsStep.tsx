@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { LayoutGrid, ChevronRight } from "lucide-react";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import type { LayoutType } from "../../services/types";
-import { getUsageColor } from "../../utils/colors";
+import { getUsageColor, getUsageColorClass } from "../../utils/colors";
 
 interface LayoutSettingsStepProps {
   selectedLayout: LayoutType;
@@ -64,13 +64,6 @@ function DetailedPreview() {
     { title: "Sonnet", value: DUMMY_DATA.sonnet.utilization },
   ];
 
-  const getColorClass = (value: number) => {
-    if (value >= 90) return "bg-red-500";
-    if (value >= 75) return "bg-orange-500";
-    if (value >= 50) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
   return (
     <div className="bg-slate-900 rounded-lg p-2 border border-slate-700 space-y-1.5">
       {items.map((item) => (
@@ -89,7 +82,7 @@ function DetailedPreview() {
           </div>
           <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className={`h-full ${getColorClass(item.value)} rounded-full transition-all`}
+              className={`h-full ${getUsageColorClass(item.value)} rounded-full transition-all`}
               style={{ width: `${Math.min(item.value, 100)}%` }}
             />
           </div>

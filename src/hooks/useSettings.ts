@@ -31,10 +31,15 @@ export function useSettings() {
   }, []);
 
   const saveShortcut = async (modifier: string, key: string) => {
-    await invoke("save_shortcut_setting", { modifier, key });
-    setSettings((prev) =>
-      prev ? { ...prev, shortcut: { modifier, key } } : null
-    );
+    try {
+      await invoke("save_shortcut_setting", { modifier, key });
+      setSettings((prev) =>
+        prev ? { ...prev, shortcut: { modifier, key } } : null
+      );
+    } catch (err) {
+      console.error("Failed to save shortcut:", err);
+      throw err;
+    }
   };
 
   const completeFirstLaunch = async () => {
@@ -45,10 +50,15 @@ export function useSettings() {
   };
 
   const saveLayout = async (layoutType: LayoutType) => {
-    await invoke("save_layout_setting", { layoutType });
-    setSettings((prev) =>
-      prev ? { ...prev, layout: { layout_type: layoutType } } : null
-    );
+    try {
+      await invoke("save_layout_setting", { layoutType });
+      setSettings((prev) =>
+        prev ? { ...prev, layout: { layout_type: layoutType } } : null
+      );
+    } catch (err) {
+      console.error("Failed to save layout:", err);
+      throw err;
+    }
   };
 
   const centerWindow = async () => {
