@@ -2,7 +2,7 @@ use std::process::Command;
 
 use crate::models::{AuthStatus, UsageResponse};
 use crate::platform;
-use crate::services::settings_store::{self, AppSettings, ShortcutConfig};
+use crate::services::settings_store::{self, AppSettings, LayoutConfig, LayoutType, ShortcutConfig};
 use crate::services::{fetch_usage, get_credentials_path, is_token_valid, read_credentials};
 
 #[tauri::command]
@@ -79,6 +79,18 @@ pub fn save_shortcut_setting(modifier: String, key: String) -> Result<(), String
 pub fn complete_first_launch() -> Result<(), String> {
     let mut settings = settings_store::load_settings();
     settings.first_launch = false;
+    settings_store::save_settings(&settings).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn save_layout_setting(layout_type: String) -> Result<(), String> {
+    let mut settings = settings_store::load_settings();
+    settings.layout = LayoutConfig {
+        layout_type: match layout_type.as_str() {
+            "detailed" => LayoutType::Detailed,
+            _ => LayoutType::Simple,
+        },
+    };
     settings_store::save_settings(&settings).map_err(|e| e.to_string())
 }
 

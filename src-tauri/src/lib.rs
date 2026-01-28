@@ -6,7 +6,7 @@ mod services;
 use commands::{
     center_settings_window, check_credentials, close_claude_terminal, complete_first_launch,
     fetch_usage_data, get_credentials_path_cmd, get_platform_info, get_settings, launch_claude_cli,
-    save_shortcut_setting, set_window_size,
+    save_layout_setting, save_shortcut_setting, set_window_size,
 };
 use services::settings_store;
 use tauri::{Emitter, Manager};
@@ -78,6 +78,7 @@ pub fn run() {
             get_credentials_path_cmd,
             get_settings,
             save_shortcut_setting,
+            save_layout_setting,
             complete_first_launch,
             get_platform_info,
             center_settings_window,

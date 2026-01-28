@@ -4,6 +4,7 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { useAuth } from "./hooks/useAuth";
 import { useSettings } from "./hooks/useSettings";
 import { Overlay } from "./components/Overlay/Overlay";
+import { Dashboard } from "./components/Dashboard/Dashboard";
 import { OnboardingWizard } from "./components/OnboardingWizard";
 import { LoginRequired } from "./components/LoginRequired";
 
@@ -11,9 +12,11 @@ function App() {
   const [isVisible, setIsVisible] = useState(true);
   const { data: authStatus, isLoading: authLoading } = useAuth();
   const {
+    settings,
     platformInfo,
     isLoading: settingsLoading,
     saveShortcut,
+    saveLayout,
     completeFirstLaunch,
     centerWindow,
   } = useSettings();
@@ -28,7 +31,7 @@ function App() {
     };
   }, []);
 
-  // Adjust window size based on app state
+  // Adjust window size based on app state and layout
   useEffect(() => {
     const adjustWindowSize = async () => {
       const window = getCurrentWindow();
@@ -39,14 +42,20 @@ function App() {
       } else if (!authLoading && authStatus && !authStatus.authenticated) {
         await window.setSize(new LogicalSize(200, 140));
       } else {
-        await window.setSize(new LogicalSize(140, 75));
+        // Set size based on layout type
+        const layoutType = settings?.layout?.layout_type ?? "simple";
+        if (layoutType === "detailed") {
+          await window.setSize(new LogicalSize(380, 360));
+        } else {
+          await window.setSize(new LogicalSize(140, 75));
+        }
       }
     };
 
-    if (platformInfo !== null) {
+    if (platformInfo !== null && settings !== null) {
       adjustWindowSize();
     }
-  }, [platformInfo, centerWindow, authLoading, authStatus]);
+  }, [platformInfo, settings, centerWindow, authLoading, authStatus]);
 
   const isLoading = authLoading || settingsLoading;
 
@@ -62,7 +71,8 @@ function App() {
       <div className="bg-slate-900 h-full pt-8">
         <OnboardingWizard
           platformName={platformInfo.name}
-          onComplete={async (modifier, key) => {
+          onComplete={async (modifier, key, layoutType) => {
+            await saveLayout(layoutType);
             await saveShortcut(modifier, key);
             await completeFirstLaunch();
           }}
@@ -73,18 +83,32 @@ function App() {
   }
 
   // Normal overlay view
-  return (
-    <div className={`${bgClass} rounded-md overflow-hidden`}>
-      {isLoading ? (
-        <div className="p-2 text-[10px] text-slate-400 font-mono">...</div>
-      ) : authStatus?.authenticated ? (
-        <Overlay enabled={isVisible} />
-      ) : (
+  const layoutType = settings?.layout?.layout_type ?? "simple";
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <div className="p-2 text-[10px] text-slate-400 font-mono">...</div>;
+    }
+
+    if (!authStatus?.authenticated) {
+      return (
         <LoginRequired
           errorReason={authStatus?.error_reason ?? null}
           credentialsPath={authStatus?.credentials_path ?? ""}
         />
-      )}
+      );
+    }
+
+    if (layoutType === "detailed") {
+      return <Dashboard />;
+    }
+
+    return <Overlay enabled={isVisible} />;
+  };
+
+  return (
+    <div className={`${bgClass} rounded-md overflow-hidden`}>
+      {renderContent()}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { UsageData, AuthStatus } from "./types";
+import type { UsageData, AuthStatus, LayoutType } from "./types";
 
 export async function checkCredentials(): Promise<AuthStatus> {
   return invoke("check_credentials");
@@ -23,4 +23,8 @@ export async function closeClaudeTerminal(): Promise<void> {
 
 export async function setWindowSize(width: number, height: number): Promise<void> {
   return invoke("set_window_size", { width, height });
+}
+
+export async function saveLayoutSetting(layoutType: LayoutType): Promise<void> {
+  return invoke("save_layout_setting", { layoutType });
 }

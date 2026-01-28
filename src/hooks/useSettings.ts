@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-
-interface ShortcutConfig {
-  modifier: string;
-  key: string;
-}
-
-interface AppSettings {
-  shortcut: ShortcutConfig;
-  first_launch: boolean;
-}
+import type { AppSettings, LayoutType } from "../services/types";
 
 interface PlatformInfo {
   name: string;
@@ -53,6 +44,13 @@ export function useSettings() {
     );
   };
 
+  const saveLayout = async (layoutType: LayoutType) => {
+    await invoke("save_layout_setting", { layoutType });
+    setSettings((prev) =>
+      prev ? { ...prev, layout: { layout_type: layoutType } } : null
+    );
+  };
+
   const centerWindow = async () => {
     await invoke("center_settings_window");
   };
@@ -62,6 +60,7 @@ export function useSettings() {
     platformInfo,
     isLoading,
     saveShortcut,
+    saveLayout,
     completeFirstLaunch,
     centerWindow,
   };

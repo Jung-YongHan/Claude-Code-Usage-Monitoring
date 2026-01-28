@@ -43,9 +43,9 @@ export function ShortcutSettings({
   useEffect(() => {
     const adjustHeight = async () => {
       const win = getCurrentWindow();
-      let height = 360;
+      let height = 380;
       if (mode === "custom") {
-        height = customShortcut ? 470 : 440;
+        height = customShortcut ? 490 : 460;
       }
       console.log("ShortcutSettings adjustHeight:", mode, height);
       try {
